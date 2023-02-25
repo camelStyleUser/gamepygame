@@ -16,7 +16,7 @@ flame=False;
 freeze=0;
 run=True
 font=pygame.font.SysFont("Arial",64)
-while True:
+while run:
   for ev in pygame.event.get():
     if ev.type== QUIT:
       pygame.quit()
