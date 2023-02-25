@@ -2,12 +2,12 @@ import sys,math
 import pygame
 from pygame.locals import *
 class Campfire:
-    def __init__(x,y):
-        this.img=pygame.image.load("player.png")
+    def __init__(this,x,y):
+        this.img=pygame.image.load("campfire.png")
         this.imgrect=this.img.get_rect()
         this.imgrect.left=x
         this.imgrect.top=y
-    def update(plrt):
+    def update(this,plrt):
         global surface
         surface.blit(this.img,this.imgrect)
         return this.imgrect.colliderect(plrt)
@@ -46,8 +46,10 @@ while run:
   playerrect.centerx = playerrect.centerx % surface.get_width()
   playerrect.centery = playerrect.centery % surface.get_height()
   flame=False;
+  surface.fill((255*winter,255,255*winter))
   for i in campfires:
       flame=flame or i.update(playerrect)
+      i.update(playerrect)
   try:
     angle=(180+math.degrees(math.atan2(x,y)))
   except:
@@ -59,7 +61,6 @@ while run:
   freeze+=(cold*2-1)
   if freeze<0:
     freeze=0
-  surface.fill((255*winter,255,255*winter))
   rplayer=pygame.transform.rotate(player,angle)
   rrect=rplayer.get_rect(center=playerrect.center)
   surface.blit(rplayer,rrect)
