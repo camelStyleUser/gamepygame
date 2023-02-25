@@ -33,7 +33,7 @@ while run:
       pygame.quit()
       run=False
     if ev.type== KEYDOWN:
-      if ev.key==pygame.K_b:
+      if ev.key==pygame.K_b and winter:
           keys = pygame.key.get_pressed()
           if keys[pygame.K_c]:
             campfires.append(Campfire(playerrect.left,playerrect.top))
