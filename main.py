@@ -27,7 +27,7 @@ while True:
     angle=(180+math.degrees(math.atan2(x,y)))
   except:
     pass
-  surface.fill((0,0,0))
+  surface.fill((0,255,0))
   rplayer=pygame.transform.rotate(player,angle)
   rrect=rplayer.get_rect(center=playerrect.center)
   surface.blit(rplayer,rrect)
