@@ -5,7 +5,7 @@ pygame.init()
 surface = pygame.display.set_mode((640,640))
 player=pygame.image.load("player.png")
 rot=0
-speed=0.05
+speed=1
 playerrect=player.get_rect()
 clock=pygame.time.Clock()
 playerrect.move((298,298))
