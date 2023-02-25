@@ -10,7 +10,11 @@ playerrect=player.get_rect()
 clock=pygame.time.Clock()
 x=0
 y=0
-angle=0;
+angle=0
+winter=True;
+flame=False;
+freeze=0;
+font=pygame.font.SysFont("Arial",64)
 while True:
   for ev in pygame.event.get():
     if ev.type== QUIT:
@@ -27,15 +31,19 @@ while True:
     angle=(180+math.degrees(math.atan2(x,y)))
   except:
     pass
-  surface.fill((0,255,0))
+  if(freeze>900):
+    pygame.quit()
+  cold=winter and (not flame)
+  freeze+=(cold*2-1)
+  if freeze<0:
+    freeze=0
+  surface.fill((255*winter,255,255*winter))
   rplayer=pygame.transform.rotate(player,angle)
   rrect=rplayer.get_rect(center=playerrect.center)
   surface.blit(rplayer,rrect)
+  if winter:
+    label=font.render("cold level:"+str(freeze/10),1,(255,0,255))
+    surface.blit(label,(0,0))
   x=0
   y=0
   pygame.display.flip()
-
-  
-  
-
-  
