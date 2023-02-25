@@ -14,11 +14,13 @@ angle=0
 winter=True;
 flame=False;
 freeze=0;
+run=True
 font=pygame.font.SysFont("Arial",64)
 while True:
   for ev in pygame.event.get():
     if ev.type== QUIT:
       pygame.quit()
+      run=False
   clock.tick(60)
   keys = pygame.key.get_pressed()
   x += (keys[pygame.K_RIGHT] - keys[pygame.K_LEFT]) * speed
@@ -33,6 +35,7 @@ while True:
     pass
   if(freeze>900):
     pygame.quit()
+    break
   cold=winter and (not flame)
   freeze+=(cold*2-1)
   if freeze<0:
