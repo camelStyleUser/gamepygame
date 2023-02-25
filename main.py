@@ -1,23 +1,32 @@
 import sys,math
 import pygame
 from pygame.locals import *
+#libraries
+#class for Campfire
 class Campfire:
     def __init__(this,x,y):
+        #constructor
         this.img=pygame.image.load("campfire.png")
         this.imgrect=this.img.get_rect()
         this.imgrect.left=x
         this.imgrect.top=y
     def update(this,plrt):
         global surface
+        #draw image on rects position
         surface.blit(this.img,this.imgrect)
         return this.imgrect.colliderect(plrt)
+#intialise the window to do anything
 pygame.init()
+#make window
 surface = pygame.display.set_mode((640,640))
 player=pygame.image.load("player.png")
 rot=0
 speed=4
+#get rectangle
 playerrect=player.get_rect()
+#to set fps etc
 clock=pygame.time.Clock()
+#some vars
 x=0
 y=0
 campfires=[]
@@ -26,18 +35,25 @@ winter=True;
 flame=False;
 freeze=0;
 run=True
+#load font
 font=pygame.font.SysFont("Arial",64)
 while run:
+  #watch for new events
   for ev in pygame.event.get():
+    #self explanatory
     if ev.type== QUIT:
       pygame.quit()
       run=False
+    #also self explanatory
     if ev.type== KEYDOWN:
       if ev.key==pygame.K_b and winter:
           keys = pygame.key.get_pressed()
+          #if key is pressed
           if keys[pygame.K_c]:
             campfires.append(Campfire(playerrect.left,playerrect.top))
+  #set fps
   clock.tick(60)
+  #get pressed keys
   keys = pygame.key.get_pressed()
   x += (keys[pygame.K_RIGHT] - keys[pygame.K_LEFT]) * speed
   y += (keys[pygame.K_DOWN] - keys[pygame.K_UP]) * speed
