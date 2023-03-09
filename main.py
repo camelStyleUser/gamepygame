@@ -29,7 +29,7 @@ clock=pygame.time.Clock()
 #some vars
 x=0
 y=0
-campfires=[]
+buildings=[]
 angle=0
 winter=True;
 flame=False;
@@ -63,9 +63,10 @@ while run:
   playerrect.centery = playerrect.centery % surface.get_height()
   flame=False;
   surface.fill((255*winter,255,255*winter))
-  for i in campfires:
-      flame=flame or i.update(playerrect)
-      i.update(playerrect)
+  for i in buildings:
+      if type(i)==Campfire:
+         flame=flame or i.update(playerrect)
+         i.update(playerrect)
   
   try:
     if x==0 and y==0:
