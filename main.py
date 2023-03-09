@@ -66,8 +66,10 @@ while run:
   for i in campfires:
       flame=flame or i.update(playerrect)
       i.update(playerrect)
+  
   try:
-    angle=(180+math.degrees(math.atan2(x,y)))
+    if x==0 and y==0:
+      angle=(180+math.degrees(math.atan2(x,y)))
   except:
     pass
   if(freeze>900):
