@@ -1,4 +1,2 @@
-
-well this is readme
-<br/>this game will be a Survival game
+this game is a Survival game with a twist, I hope everyone will like it.
 
