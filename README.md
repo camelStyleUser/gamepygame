@@ -1,2 +1,1 @@
-this game is a Survival game with a twist, I hope everyone will like it.
-
+this game is a Survival game with a plot, I hope everyone will like it.
