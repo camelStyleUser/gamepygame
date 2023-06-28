@@ -14,7 +14,7 @@ int main()
 
   if(x == 'Y'){
 
-    system("cd $HOME && pacman -S python3 python-pip wget && pip install pygame && mkdir .gamepygame && echo \"python $HOME/.gamepygame/main.py\" >> && chmod +x $PREFIX/bin/gamepygame")
+    system("cd $HOME && sudo pacman -S python3 python-pip wget && pip install pygame && mkdir .gamepygame && echo \"python $HOME/.gamepygame/main.py\" >> && chmod +x $PREFIX/bin/gamepygame")
     printf("Введите gamepygame чтобы запустить игру.")
 
   }
