@@ -27,7 +27,10 @@ sys.stderr = ose
 try:
     pygame.mixer.init()
 except:
-    sys.stderr.write("WARNING!couldnt initialise sounds")
+    try:
+        sys.stderr.write("WARNING!couldnt initialise sounds")
+    except:
+        pass
 from pygame.locals import *
 
 # libraries
