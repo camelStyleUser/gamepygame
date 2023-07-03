@@ -24,7 +24,10 @@ import pygame
 
 sys.stdout = oso
 sys.stderr = ose
-pygame.mixer.init()
+try:
+    pygame.mixer.init()
+except:
+    sys.stderr.write("WARNING!couldnt initialise sounds")
 from pygame.locals import *
 
 # libraries
@@ -391,9 +394,12 @@ while run:
         spawndelay *= 0.95
         enemies.append(Enemy(random.randint(0, surface.get_width()), random.randint(0, surface.get_height())))
     if health < 3:
-        warn = pygame.mixer.Sound("warning.wav")
-        warn.set_volume(0.3)
-        warn.play(0)
+        try:
+            warn = pygame.mixer.Sound("warning.wav")
+            warn.set_volume(0.3)
+            warn.play(0)
+        except:
+            pass
     gametomap(mapx,mapy)
     if playerrect.right>surface.get_width():
         mapx+=1
@@ -461,9 +467,12 @@ while run:
     except:
         pass
     if (freeze > 800):
-        warn = pygame.mixer.Sound("warning.wav")
-        warn.set_volume(0.3)
-        warn.play(0)
+        try:
+            warn = pygame.mixer.Sound("warning.wav")
+            warn.set_volume(0.3)
+            warn.play(0)
+        except:
+            pass
     if (freeze > 1000):
         pygame.quit()
         break
