@@ -1,3 +1,2 @@
 
-<br/>this is a Survival game
-
+shitty code repository
