@@ -1,9 +1,134 @@
 import sys, math, random, sys, os
 import pip
-
+SAVEVERSION=0
+GAMEVERSION=0
+SUPPORTEDSAVEVER=0
+SUPPORTEDGAMEVER=0
+def writeLong(buffer,intg):
+ buffer.write(intg.to_bytes(8,"big"))
+def writeInt(buffer,intg):
+ buffer.write(intg.to_bytes(4,"big"))
+def writeShort(buffer,intg):
+ buffer.write(intg.to_bytes(2,"big"))
+def writeByte(buffer,intg):
+ buffer.write(intg.to_bytes(1,"big"))
+def readByte(buffer):
+ return int.from_bytes(buffer.read(1),"big")
+def readShort(buffer):
+ return int.from_bytes(buffer.read(2),"big")
+def readInt(buffer):
+ return int.from_bytes(buffer.read(4),"big")
+def readLong(buffer):
+ return int.from_bytes(buffer.read(8),"big")
+def writeMagic(buffer):
+ buffer.write(b'SWHS')
+def readMagic(buffer):
+ if buffer.read(4)!=b'SWHS':
+  raise Exception("invalid magic")
+def writeSave(filename):
+ file=open(filename,"wb")
+ writeMagic(file)
+ writeShort(file,SAVEVERSION)
+ writeInt(file,GAMEVERSION)
+ writeByte(file,0)
+ writeInt(file,playerrect.x)
+ writeInt(file,playerrect.y)
+ writeInt(file,mapx)
+ writeInt(file,mapy)
+ writeInt(file,int(freeze*10))
+ writeInt(file,health)
+ writeInt(file,len(map))
+ if len(map)==0:
+  writeInt(file,0)
+ else:
+  writeInt(file,len(map[0]))
+ for clms in map:
+  for sector in clms:
+   tmpbuilds=[]
+   tmpunits=[]
+   tmpresources=[]
+   for i in sector:
+    if type(i)==Resource:
+     tmpresources.append(i)
+    elif type(i)==Enemy or type(i)==Megaenemy or type(i)==KillBarrier:
+     tmpunits.append(i)
+    else:
+     tmpbuilds.append(i)
+   writeLong(file,len(tmpbuilds))
+   for i in tmpbuilds:
+    writeInt(file,i.imgrect.left)
+    writeInt(file,i.imgrect.top)
+    writeInt(file,i.type)
+   writeLong(file,len(tmpunits))
+   for i in tmpunits:
+    writeInt(file,i.imgrect.left)
+    writeInt(file,i.imgrect.top)
+    writeInt(file,i.type)
+   writeLong(file,len(tmpresources))
+   for i in tmpresources:
+    writeInt(file,i.imgrect.left)
+    writeInt(file,i.imgrect.top)
+    writeInt(file,itemindexes.index(i.type))
+ reskeys=list(inventory.keys())
+ writeInt(file,len(reskeys))
+ for reskey in reskeys:
+  writeInt(file,itemindexes.index(reskey))
+  writeLong(file,inventory[reskey])
+ file.close()
+def readSave(filename):
+ global map,playerrect,mapx,mapy,inventory,freeze,health
+ file=open(filename,"rb")
+ readMagic(file)
+ sv=readShort(file)
+ if sv<SUPPORTEDSAVEVER or sv>SAVEVERSION:
+  raise Exception("save unsupported")
+ gv=readInt(file)
+ if gv<SUPPORTEDGAMEVER or gv>GAMEVERSION:
+  raise Exception("game version unsupported")
+ type=readByte(file)
+ px=readInt(file)
+ py=readInt(file)
+ playerrect.x=px
+ playerrect.y=py
+ mapx=readInt(file)
+ mapy=readInt(file)
+ freeze=readInt(file)/10
+ health=readInt(file)
+ map=[]
+ width=readInt(file)
+ height=readInt(file)
+ col=[]
+ for i in range(height):
+  col.append([])
+ for i in range(width):
+  map.append(col[:])
+ for x in range(width):
+  for y in range(height):
+   blds=readLong(file)
+   for i in range(blds):
+    bldx=readInt(file)
+    bldy=readInt(file)
+    map[x][y].append(buildtypes[readInt(file)](bldx,bldy))
+   blds=readLong(file)
+   for i in range(blds):
+    bldx=readInt(file)
+    bldy=readInt(file)
+    bldval=readInt(file)
+    map[x][y].append(unittypes[bldval](bldx,bldy))
+   blds=readLong(file)
+   for i in range(blds):
+    bldx=readInt(file)
+    bldy=readInt(file)
+    map[x][y].append(Resource(bldx,bldy,itemindexes[readInt(file)]))
+ itemslen=readInt(file)
+ for key in inventory.keys():
+  inventory[key]=0
+ for i in range(itemslen):
+  inventory[itemindexes[readInt(file)]]=readInt(file)
+ file.close()
+ maptogame(mapx,mapy)
 ose = sys.stderr
 oso = sys.stdout
-
 try:
     print("""this is installation of needed packages.\n
 shells are run with commands to invoke pip,nothing malicious""")
@@ -43,6 +168,7 @@ spawndelay = 10000
 
 map=[[[],[]],[[],[]]]
 class Enemy:
+    type=0
     def __init__(this, x, y):
         this.img = pygame.image.load("enemy.png")
         this.imgrect = this.img.get_rect()
@@ -70,8 +196,8 @@ class Enemy:
         surface.blit(rendimage, rendrect)
         return this.imgrect.colliderect(plrt)
 
-
 class Megaenemy:
+    type=1
     def __init__(this, x, y):
         this.img = pygame.image.load("megaenemy.png")
         this.imgrect = this.img.get_rect()
@@ -101,6 +227,7 @@ class Megaenemy:
 
 
 class Campfire:
+    type=0
     def __init__(this, x, y):
         # constructor
         this.img = pygame.image.load("campfire.png")
@@ -116,6 +243,7 @@ class Campfire:
 
 
 class AEStand:
+    type=1
     def __init__(this, x, y):
         this.alive = True
         this.dn = 20
@@ -140,6 +268,7 @@ class AEStand:
 
 
 class Home:
+    type=2
     def __init__(this, x, y):
         # constructor
         this.img = pygame.image.load("home.png")
@@ -160,6 +289,7 @@ class Home:
 
 
 class Smallfarm:
+    type=3
     def __init__(this, x, y):
         # constructor
         this.img = pygame.image.load("smallfarm.png")
@@ -181,6 +311,7 @@ class Smallfarm:
 
 
 class Farm:
+    type=4
     def __init__(this, x, y):
         # constructor
         this.img = pygame.image.load("farm.png")
@@ -201,6 +332,7 @@ class Farm:
         return this.imgrect.colliderect(plrt)
 
 class KillBarrier:
+    type=2
     def __init__(this,x,y):
         this.img=pygame.image.load("apstand.png")
         this.imgrect = this.img.get_rect()
@@ -212,6 +344,7 @@ class KillBarrier:
         surface.blit(this.img, this.imgrect)
         return this.imgrect.colliderect(plrt)
 class Burner:
+    type=5
     def __init__(this, x, y):
         # constructor
         this.img = pygame.image.load("burner.png")
@@ -225,7 +358,8 @@ class Burner:
         surface.blit(this.img, this.imgrect)
         return this.imgrect.colliderect(plrt)
 
-
+buildtypes=[Campfire,AEStand,Home,Smallfarm,Farm,Burner]
+unittypes=[Enemy,Megaenemy,KillBarrier]
 class Resource:
     def __init__(this, x, y, res):
         this.img = pygame.image.load(res + ".png")
@@ -239,8 +373,6 @@ class Resource:
         # draw image on rects position
         surface.blit(this.img, this.imgrect)
         return this.imgrect.colliderect(plrt)
-
-
 # intialise the window to do anything
 pygame.init()
 # make window
@@ -285,10 +417,11 @@ buildings = []
 enemies = []
 resources = []
 inventory = {'wood': 0, 'stone': 0, 'flammable': 0, 'metal': 0, 'food': 0}
+itemindexes=['wood','stone','flammable','metal','food']
 angle = 0
 health = 10
 qprs = False
-winter = True
+winter = False
 flame = False
 freeze = 0
 mapx=0
@@ -308,7 +441,6 @@ def lightthecampfire():
             elif ev.type==KEYDOWN:
                 if ev.key==K_ESCAPE:
                     break
-        
     return compl
 prs = False
 run = True
@@ -332,7 +464,11 @@ while run:
             break
         # also self-explanatory
         if ev.type == KEYDOWN:
-            if ev.key == pygame.K_b:
+            if ev.key==pygame.K_p:
+             writeSave("test.swhs")
+            elif ev.key==pygame.K_n:
+             readSave("test.swhs")
+            elif ev.key == pygame.K_b:
                 keys = pygame.key.get_pressed()
                 # if key is pressed
                 if keys[pygame.K_c]:
